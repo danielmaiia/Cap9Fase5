@@ -37,15 +37,20 @@ def main():
 
     while ordensDeCarga or filaEspera:
         # Adiciona itens da ordem de carga à fila de espera se houver menos de 3 mercadorias na fila de espera
-        while ordensDeCarga and len(filaEspera) < 3:
+        while ordensDeCarga and len(filaEspera) == 0:
             if len(ordensDeCarga) >= 3:
                 for _ in range(3):
                     mercadoria = ordensDeCarga.popleft()
                     filaEspera.append(mercadoria)
                     print(f"'{mercadoria}' foi para a fila de espera.")
+                    
             else:
                 filaEspera.extend(ordensDeCarga)
                 ordensDeCarga.clear()
+                
+            print(f"Fila de epera com {len(filaEspera)} mercadorias")
+            print(f"Ordem de carga com {len(ordensDeCarga)} mercadorias")
+           
 
         # Início da carga às 20:10
         if tempoTotal == 0 and horaChegadaVan == horaInicioCarga:
@@ -53,24 +58,32 @@ def main():
 
         # Calcula o tempo de carregamento com base no RM do aluno
         tempoCarga = calcularTempoCarregamento(rmAluno)
+        
+        print(f"Tempo de espera: {tempoCarga*(len(filaEspera)+len(ordensDeCarga))} minutos")
 
         # Realiza a carga
         if filaEspera:
             mercadoria = filaEspera.popleft()
             numMercadoriasNaOrdem = len(ordensDeCarga) + len(filaEspera) + 1
             print(
-                f"\nIniciando carga da '{mercadoria}' (Ordem de Carga com {numMercadoriasNaOrdem} mercadorias) às {horaInicioCarga}:{tempoTotal:02}")
+                f"\nIniciando carga da '{mercadoria}' (Ordem de Carga com {len(ordensDeCarga)} mercadorias) às {horaInicioCarga}:{tempoTotal:02}")
             print(f"Tempo de carregamento: {tempoCarga} minutos")
             tempoTotal += tempoCarga
             numMercadoriasCarregadas += 1
-            print(f"Tempo total de carregamento acumulado: {tempoTotal} minutos")
-            print(f"Número de mercadorias na fila de espera: {len(filaEspera)}")
+            print(f"Carga da '{mercadoria}' finalizada às {horaInicioCarga} : {tempoTotal}")
+            if tempoCarga > 2 and ordensDeCarga:
+                mercadoria = ordensDeCarga.popleft()
+                filaEspera.append(mercadoria)
+                print(f"'{mercadoria}' foi para a fila de espera. Fila de espera com {len(filaEspera)} mercadorias.")
+                
+           
+            print(f"Número de mercadorias na fila de espera: {len(filaEspera)}. Ordem de carga com {len(ordensDeCarga)} mercadorias.")
 
         # A cada 2 minutos, o primeiro item da fila de ordem de cargas vai para a fila de espera
         if tempoTotal % 2 == 0 and ordensDeCarga:
             mercadoria = ordensDeCarga.popleft()
             filaEspera.append(mercadoria)
-            print(f"'{mercadoria}' foi para a fila de espera.")
+            print(f"'{mercadoria}' foi para a fila de espera.Fila de espera com {len(filaEspera)} mercadorias")
 
         # Verifica se a carga está completa
         if not ordensDeCarga and not filaEspera:
@@ -80,4 +93,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
